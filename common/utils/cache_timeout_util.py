@@ -1,0 +1,9 @@
+
+
+MANAGER_TIMEOUT = 60*60*24*7
+
+USER_TIMEOUT = 60*60*24*7
+
+
+
+
