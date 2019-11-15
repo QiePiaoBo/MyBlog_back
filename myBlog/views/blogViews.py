@@ -323,11 +323,13 @@ class BlogsGetAPIView(APIView):
         page_size = int(request.query_params.get("page_size"))
 
         start = page_number*page_size - page_size
+        all_blogs = Blog.objects.filter(blog_secret=0)
 
         blogs = Blog.objects.filter(blog_secret=0).order_by('-id')[start:page_size]
 
-        total_page = math.ceil(len(blogs)/page_size)
-        total_num = len(blogs)
+        total_page = math.ceil(len(all_blogs)/page_size)
+        total_num = len(all_blogs)
+
         serializer = BlogSerializer(blogs, many=True)
         res_data = []
         for i in serializer.data:
