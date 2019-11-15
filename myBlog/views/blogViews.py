@@ -1,4 +1,7 @@
+import math
+
 from django.core.cache import cache
+from django.core.paginator import Paginator
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -315,7 +318,16 @@ class BlogGetAPIView(APIView):
 class BlogsGetAPIView(APIView):
 
     def get(self, request):
-        blogs = Blog.objects.filter(blog_secret=0)
+
+        page_number = int(request.query_params.get("page_number"))
+        page_size = int(request.query_params.get("page_size"))
+
+        start = page_number*page_size - page_size
+
+        blogs = Blog.objects.filter(blog_secret=0).order_by('-id')[start:page_size]
+
+        total_page = math.ceil(len(blogs)/page_size)
+        total_num = len(blogs)
         serializer = BlogSerializer(blogs, many=True)
         res_data = []
         for i in serializer.data:
@@ -331,4 +343,11 @@ class BlogsGetAPIView(APIView):
                 "blog_disagree": i['blog_disagree'],
             }
             res_data.append(piece_data)
-        return Response(res_data)
+        data = {
+            "status":200,
+            "msg":"Query OK",
+            "data": res_data,
+            "total_number":total_num,
+            "total_page":total_page
+        }
+        return Response(data)
