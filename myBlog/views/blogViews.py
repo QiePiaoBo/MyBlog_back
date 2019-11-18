@@ -322,34 +322,31 @@ class BlogsGetAPIView(APIView):
         page_number = int(request.query_params.get("page_number"))
         page_size = int(request.query_params.get("page_size"))
 
-        start = page_number*page_size - page_size
-        all_blogs = Blog.objects.filter(blog_secret=0)
+        blogs = Blog.objects.filter(blog_secret=0).order_by('-id')
+        blog_list = Paginator(blogs, per_page=page_size)
 
-        blogs = Blog.objects.filter(blog_secret=0).order_by('-id')[start:page_size]
+        page_blog = blog_list.page(page_number)
 
-        total_page = math.ceil(len(all_blogs)/page_size)
-        total_num = len(all_blogs)
-
-        serializer = BlogSerializer(blogs, many=True)
         res_data = []
-        for i in serializer.data:
-            print(i)
-            piece_author = User.objects.get(pk=i['blog_author'])
+        for p in page_blog:
+            serializer = BlogSerializer(p)
+            piece_author = User.objects.get(pk=serializer.data['blog_author'])
 
             piece_data = {
-                "id": i['id'],
-                "blog_keyword": i['blog_keyword'],
-                "blog_description": i['blog_description'],
+                "id": serializer.data['id'],
+                "blog_keyword": serializer.data['blog_keyword'],
+                "blog_description": serializer.data['blog_description'],
                 "blog_author": piece_author.user_name,
-                "blog_agree": i['blog_agree'],
-                "blog_disagree": i['blog_disagree'],
+                "blog_agree": serializer.data['blog_agree'],
+                "blog_disagree": serializer.data['blog_disagree'],
             }
             res_data.append(piece_data)
+
         data = {
             "status":200,
             "msg":"Query OK",
             "data": res_data,
-            "total_number":total_num,
-            "total_page":total_page
+            "total_number":blog_list.count,
+            "total_page":blog_list.num_pages
         }
         return Response(data)
