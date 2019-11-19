@@ -51,6 +51,7 @@ class AggrementAPIView(APIView):
 # 用户评论
 class CommitAPIView(APIView):
 
+
     # 根据文章id,文章作者,评论者来获取评论记录
     def post(self, request):
         way = request.query_params.get("way")
@@ -64,8 +65,6 @@ class CommitAPIView(APIView):
         commits = None
         if way == "article":
             commits = Commit.objects.filter(committed_blog=request.data.get("blog_id"))
-        elif way == "author":
-            commits = Commit.objects.filter(author=request.data.get("author"))
         elif way == "user":
             user_id = cache.get(request.query_params.get("token"))
             commits = Commit.objects.filter(committer=user_id)
@@ -73,8 +72,15 @@ class CommitAPIView(APIView):
             commits = Commit.objects.all()
         elif way == None:
             self.do_commit(request)
-        commit_list = []
-        for commit in commits:
+
+        result_list = []
+
+        page_size = request.data.get('page_size')
+        page_number = request.data.get('page_number')
+        commit_lists = Paginator(commits, per_page=page_size)
+
+        result_commits = commit_lists.page(page_number)
+        for commit in result_commits:
             serializer = CommitSerializer(commit)
             committer_id = serializer.data.get("committer")
             committer_name = User.objects.get(pk=committer_id).user_name
@@ -85,11 +91,13 @@ class CommitAPIView(APIView):
                 "commit_content": serializer.data.get('commit_content'),
                 "commit_time": serializer.data.get('commit_time')
             }
-            commit_list.append(commit_data)
+            result_list.append(commit_data)
         data = {
             "status": status.HTTP_200_OK,
             "msg": "Query Ok",
-            "data": commit_list
+            "data": result_list,
+            "total_num": commit_lists.count,
+            "total_page": commit_lists.num_pages
         }
         return Response(data)
 
