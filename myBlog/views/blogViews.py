@@ -64,12 +64,12 @@ class CommitAPIView(APIView):
         way = request.query_params.get("way")
         commits = None
         if way == "article":
-            commits = Commit.objects.filter(committed_blog=request.data.get("blog_id"))
+            commits = Commit.objects.filter(committed_blog=request.data.get("blog_id")).order_by("-id")
         elif way == "user":
             user_id = cache.get(request.query_params.get("token"))
-            commits = Commit.objects.filter(committer=user_id)
+            commits = Commit.objects.filter(committer=user_id).order_by("-id")
         elif way == "all":
-            commits = Commit.objects.all()
+            commits = Commit.objects.all().order_by("-id")
         elif way == None:
             self.do_commit(request)
 
