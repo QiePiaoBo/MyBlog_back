@@ -598,6 +598,7 @@ class IndexUsersAPIView(APIView):
                 "user_name": serializer.data.get('user_name'),
                 "user_sex": user_sex,
                 "user_address": serializer.data.get('user_address'),
+                "icon": serializer.data.get('user_image_url'),
             }
             res_users.append(piece_data)
         res_data = {
