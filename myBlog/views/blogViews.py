@@ -35,7 +35,7 @@ class AggrementAPIView(APIView):
             update_data = {
                 "blog_id": blog_id,
                 "blog_agree": agree + 1,
-                "blog_disagree": disagree -1
+                "blog_disagree": disagree - 1
             }
         elif attitude == "disagree":
             update_data = {
@@ -53,7 +53,6 @@ class AggrementAPIView(APIView):
 
 # 用户评论
 class CommitAPIView(APIView):
-
 
     # 根据文章id,文章作者,评论者来获取评论记录
     def post(self, request):
@@ -329,17 +328,15 @@ class BlogGetAPIView(APIView):
 class BlogsGetAPIView(APIView):
 
     def get(self, request):
-
         page_number = int(request.query_params.get("page_number"))
         page_size = int(request.query_params.get("page_size"))
 
         blogs = Blog.objects.filter(blog_secret=0).order_by('-id')
         blog_list = Paginator(blogs, per_page=page_size)
-
-        page_blog = blog_list.page(page_number)
+        page_blogs = blog_list.page(page_number)
 
         res_data = []
-        for p in page_blog:
+        for p in page_blogs:
             serializer = BlogSerializer(p)
             piece_author = User.objects.get(pk=serializer.data['blog_author'])
 
@@ -354,10 +351,47 @@ class BlogsGetAPIView(APIView):
             res_data.append(piece_data)
 
         data = {
-            "status":200,
-            "msg":"Query OK",
+            "status": 200,
+            "msg": "Query OK",
             "data": res_data,
-            "total_number":blog_list.count,
-            "total_page":blog_list.num_pages
+            "total_number": blog_list.count,
+            "total_page": blog_list.num_pages
         }
         return Response(data)
+
+
+# 查询某个人的博客
+class UserBlogsAPIView(APIView):
+
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        user_name = request.data.get('user_name')
+        page_num = request.data.get('page_num')
+        page_size = request.data.get('page_size')
+        blogs = None
+        page_serializers = None
+        blogs = None
+        if not user_id:
+            if user_name:
+                blogs = Blog.objects.filter(blog_author__user_name=user_name)
+            else:
+                return Response("参数错误")
+        else:
+            blogs = Blog.objects.filter(blog_author_id=user_id)
+
+        if blogs != None:
+            blog_list = Paginator(blogs, per_page=page_size)
+            page_blogs = blog_list.page(page_num)
+            page_serializers = []
+            for i in page_blogs:
+                piece_serializer = BlogSerializer(i)
+                page_serializers.append(piece_serializer.data)
+        result_data = {
+            "status": 200,
+            "msg": "Query Ok",
+            "data": page_serializers,
+            "total_page":blog_list.num_pages,
+            "total_number":blog_list.count
+
+        }
+        return Response(result_data)
