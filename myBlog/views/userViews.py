@@ -112,9 +112,9 @@ class UserAPIView(CreateAPIView):
 
         if not serializer.save():
             data = {
-                "status":status.HTTP_403_FORBIDDEN,
-                "msg":"xinxichongfu",
-                "data":request.data
+                "status": status.HTTP_403_FORBIDDEN,
+                "msg": "xinxichongfu",
+                "data": request.data
             }
             return data
 
@@ -145,9 +145,9 @@ class UserAPIView(CreateAPIView):
                 raise NotFound(detail="您所输入的用户不存在")
         except User.DoesNotExist:
             data = {
-                "status":status.HTTP_404_NOT_FOUND,
+                "status": status.HTTP_404_NOT_FOUND,
                 "msg": "您输入的用户不存在",
-                "data":request.data
+                "data": request.data
             }
             return Response(data)
 
@@ -163,17 +163,17 @@ class UserAPIView(CreateAPIView):
 
         if not user.verify_password(user_password):
             data = {
-                "status":status.HTTP_406_NOT_ACCEPTABLE,
-                "msg":"密码错误",
-                "data":request.data
+                "status": status.HTTP_406_NOT_ACCEPTABLE,
+                "msg": "密码错误",
+                "data": request.data
             }
             return Response(data)
 
         if user.user_lock:
             data = {
-                "status":status.HTTP_403_FORBIDDEN,
-                "msg":"用户已被禁用",
-                "data":request.data
+                "status": status.HTTP_403_FORBIDDEN,
+                "msg": "用户已被禁用",
+                "data": request.data
             }
             return Response(data)
         # print("2@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
@@ -187,7 +187,7 @@ class UserAPIView(CreateAPIView):
             "id": user.id,
             "name": user.user_name,
             "phone": user.user_phone,
-            "token":token
+            "token": token
         }
 
         resp_data = {
@@ -578,3 +578,31 @@ class StaySaidAPIView(APIView):
                 "data": req_data
             }
         return Response(data)
+
+
+# 首页用户
+class IndexUsersAPIView(APIView):
+
+    def get(self, request):
+        users = User.objects.filter(user_lock=0)
+        res_users = []
+        for user in users:
+            serializer = UserSerializer(user)
+            user_sex = "man"
+            if serializer.data.get('user_sex'):
+                user_sex = "man"
+            elif not serializer.data.get('user_sex'):
+                user_sex = "woman"
+            piece_data = {
+                "id": serializer.data.get('id'),
+                "user_name": serializer.data.get('user_name'),
+                "user_sex": user_sex,
+                "user_address": serializer.data.get('user_address'),
+            }
+            res_users.append(piece_data)
+        res_data = {
+            "status": 200,
+            "msg": "Query Ok",
+            "data": res_users
+        }
+        return Response(res_data)

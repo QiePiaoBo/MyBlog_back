@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^theme/', userViews.UserThemeAPIView().as_view()),
     url(r'^secret/', userViews.UserSecretMessageAPIView().as_view()),
     url(r'^stay/', userViews.StaySaidAPIView().as_view()),
+    url(r'^index_users/', userViews.IndexUsersAPIView().as_view()),
     url(r'^agreement/',blogViews.AggrementAPIView().as_view()),
     url(r'^commit/',blogViews.CommitAPIView().as_view()),
     url(r'^articles/',blogViews.ArticleAPIView().as_view()),
