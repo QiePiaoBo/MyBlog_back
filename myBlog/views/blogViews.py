@@ -30,14 +30,17 @@ class AggrementAPIView(APIView):
         agree = serializer.data.get("blog_agree")
 
         disagree = serializer.data.get("blog_disagree")
+
         if attitude == "agree":
             update_data = {
                 "blog_id": blog_id,
-                "blog_agree": agree + 1
+                "blog_agree": agree + 1,
+                "blog_disagree": disagree -1
             }
         elif attitude == "disagree":
             update_data = {
                 "blog_id": blog_id,
+                "blog_agree": agree - 1,
                 "blog_disagree": disagree + 1
             }
         update = BlogSerializer(data=update_data)
