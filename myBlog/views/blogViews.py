@@ -34,21 +34,35 @@ class AggrementAPIView(APIView):
         if attitude == "agree":
             update_data = {
                 "blog_id": blog_id,
-                "blog_agree": agree + 1,
-                "blog_disagree": disagree - 1
+                "blog_agree": agree + 1
+            }
+        elif attitude == "not_agree":
+            update_data = {
+                "blog_id": blog_id,
+                "blog_agree": agree - 1
             }
         elif attitude == "disagree":
             update_data = {
                 "blog_id": blog_id,
-                "blog_agree": agree - 1,
                 "blog_disagree": disagree + 1
+            }
+        elif attitude == "not_disagree":
+            update_data = {
+                "blog_id": blog_id,
+                "blog_disagree": disagree - 1
             }
         update = BlogSerializer(data=update_data)
         update.is_valid(raise_exception=True)
 
         update.update(blog, update_data)
+        serializer = BlogSerializer(blog)
+        data = {
+            "status":200,
+            "msg":"Updated Ok",
+            "data": serializer.data
+        }
 
-        return Response(update.validated_data)
+        return Response(data)
 
 
 # 用户评论
