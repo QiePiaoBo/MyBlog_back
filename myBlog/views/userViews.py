@@ -104,8 +104,6 @@ class UserAPIView(CreateAPIView):
 
     def do_register(self, request, *args, **kwargs):
 
-        register_ip = request.META['REMOTE_ADDR']
-
         serializer = self.get_serializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
@@ -117,6 +115,19 @@ class UserAPIView(CreateAPIView):
                 "data": request.data
             }
             return data
+        # 在新用户注册成功的时候,同时添加theme表中的记录
+        user_name = request.data.get("user_name")
+        user = User.objects.get(user_name=user_name)
+        user_id = user.id
+
+        theme = {
+            "user_id":user_id,
+            "recent_theme": 1,
+            "fav_theme": 2
+        }
+        theme_serializer = ThemeSerializer(data=theme)
+        theme_serializer.is_valid(raise_exception=True)
+        theme_serializer.save()
 
         headers = self.get_success_headers(serializer.data)
 
