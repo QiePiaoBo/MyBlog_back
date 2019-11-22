@@ -5,6 +5,7 @@ from myBlog.views import userViews, blogViews, relationViews
 urlpatterns = [
     url(r'^manager/', userViews.ManagerUserAPIView().as_view()),
     url(r'^user/', userViews.UserAPIView().as_view()),
+    url(r'^user_info/', userViews.InfoUserAPIView().as_view()),
     url(r'^attention/', userViews.UserAttentionAPIView().as_view()),
     url(r'^mood/', userViews.UserMoodAPIView().as_view()),
     url(r'^theme/', userViews.UserThemeAPIView().as_view()),

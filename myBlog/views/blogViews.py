@@ -344,8 +344,11 @@ class BlogsGetAPIView(APIView):
     def get(self, request):
         page_number = int(request.query_params.get("page_number"))
         page_size = int(request.query_params.get("page_size"))
-
-        blogs = Blog.objects.filter(blog_secret=0).order_by('-id')
+        select_way = request.query_params.get("select_way")
+        if select_way:
+            blogs = Blog.objects.filter(blog_secret=0).filter(blog_type=select_way).order_by('-id')
+        else:
+            blogs = Blog.objects.filter(blog_secret=0).filter(blog_top = True).order_by('-id')
         blog_list = Paginator(blogs, per_page=page_size)
         page_blogs = blog_list.page(page_number)
 

@@ -48,6 +48,7 @@ class Blog(models.Model):
     blog_author = models.ForeignKey(User, related_name='blog_user', null=True)
     blog_type = models.ForeignKey(BlogType, related_name='blog_type', null=True)
     blog_content = models.ForeignKey(Article, related_name='blog_article', null=True)
+    blog_top = models.BooleanField(default=False)
     blog_agree = models.IntegerField(null=True, default=0)
     blog_disagree = models.IntegerField(null=True, default=0)
 

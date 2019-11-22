@@ -618,3 +618,38 @@ class IndexUsersAPIView(APIView):
             "data": res_users
         }
         return Response(res_data)
+
+
+# 用户信息
+class InfoUserAPIView(APIView):
+
+    def get(self, request):
+        user_name = request.query_params.get('user_name')
+        user_id = request.query_params.get('user_id')
+        user = None
+        if user_id:
+            user = User.objects.get(pk=user_id)
+        else:
+            if user_name:
+                user = User.objects.get(user_name=user_name)
+            else:
+                return Response("Infomation not enough")
+
+        serializer = UserSerializer(user)
+        res_user = serializer.data
+        result_data = {
+            "user_id": res_user.get('id'),
+            "user_name": res_user.get('user_name'),
+            "user_sex": res_user.get("user_sex"),
+            "user_address": res_user.get("user_address"),
+            "user_mark": res_user.get("user_mark"),
+            "user_birthday": res_user.get("user_birthday"),
+            "user_school": res_user.get("user_school"),
+            "user_description": res_user.get("user_description"),
+            "user_weibo": res_user.get("user_weibo"),
+            "user_blood": res_user.get("user_blood"),
+            "user_says": res_user.get("user_says"),
+        }
+        return Response(result_data)
+
+
