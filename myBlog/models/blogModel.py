@@ -15,6 +15,7 @@ from myBlog.models.userModel import User, UserGroup
 
 # 博客模块
 class BlogType(models.Model):
+    icon = models.CharField(max_length=64, null=True)
     type_name = models.CharField(max_length=64, null=True)
 
     class Meta:
