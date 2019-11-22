@@ -20,5 +20,6 @@ urlpatterns = [
     url(r'^blog/(?P<bid>\d+)/$',blogViews.BlogGetAPIView().as_view()),
     url(r'^index_blog/',blogViews.BlogsGetAPIView().as_view()),
     url(r'^user_blog/',blogViews.UserBlogsAPIView().as_view()),
+    url(r'^blog_type/',blogViews.BlogTypesAPIView().as_view()),
     url(r'^marks/',relationViews.MarkAPIView.as_view()),
 ]

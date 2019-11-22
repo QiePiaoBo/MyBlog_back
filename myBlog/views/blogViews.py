@@ -7,9 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from myBlog.authentications.user_authentication import UserAuthentication
-from myBlog.models import Blog, User, Commit, Article
+from myBlog.models import Blog, User, Commit, Article, BlogType
 from myBlog.permissions.user_permission import UserLogin
-from myBlog.serializers.blogSerializer import BlogSerializer, ArticleSerializer
+from myBlog.serializers.blogSerializer import BlogSerializer, ArticleSerializer, BlogTypeSerializer
 from myBlog.serializers.relationSerializer import CommitSerializer
 
 
@@ -412,3 +412,17 @@ class UserBlogsAPIView(APIView):
 
         }
         return Response(result_data)
+
+
+# 查询博客种类
+class BlogTypesAPIView(APIView):
+
+    def get(self, request):
+        types = BlogType.objects.all()
+        type_serializer = BlogTypeSerializer(types, many=True)
+        return Response(type_serializer.data)
+
+
+
+
+
