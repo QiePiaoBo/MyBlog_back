@@ -346,7 +346,10 @@ class BlogsGetAPIView(APIView):
         page_size = int(request.query_params.get("page_size"))
         select_way = request.query_params.get("select_way")
         if select_way:
-            blogs = Blog.objects.filter(blog_secret=0).filter(blog_type__type_name=select_way).order_by('-id')
+            # 根据数字获取
+            blogs = Blog.objects.filter(blog_secret=0).filter(blog_type=select_way).order_by('-id')
+            # 根据汉字获取
+            # blogs = Blog.objects.filter(blog_secret=0).filter(blog_type__type_name=select_way).order_by('-id')
         else:
             blogs = Blog.objects.filter(blog_secret=0).filter(blog_top = True).order_by('-id')
         blog_list = Paginator(blogs, per_page=page_size)
