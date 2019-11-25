@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from myBlog.views import userViews, blogViews, relationViews
+from myBlog.views import userViews, blogViews, relationViews, manageViews
 
 urlpatterns = [
     url(r'^manager/', userViews.ManagerUserAPIView().as_view()),
@@ -22,4 +22,11 @@ urlpatterns = [
     url(r'^user_blog/',blogViews.UserBlogsAPIView().as_view()),
     url(r'^blog_type/',blogViews.BlogTypesAPIView().as_view()),
     url(r'^marks/',relationViews.MarkAPIView.as_view()),
+
+    # 管理员功能
+    url(r'^manage_blog_type/', manageViews.ManageBlogTypeAPIView.as_view()),
+    url(r'^manage_blog/', manageViews.ManageBlogAPIView.as_view()),
+    url(r'^manage_user/', manageViews.ManageUserAPIView.as_view()),
+    url(r'^manage_notice/', manageViews.ManageSystemNoticeAPIView.as_view()),
+
 ]

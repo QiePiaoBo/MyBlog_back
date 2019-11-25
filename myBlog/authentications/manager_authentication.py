@@ -1,5 +1,6 @@
 from django.core.cache import cache
 from rest_framework.authentication import BaseAuthentication
+from rest_framework.response import Response
 
 from common.utils.token_util import MANAGER
 from myBlog.models import Manager
@@ -13,15 +14,13 @@ class ManagerAuthentication(BaseAuthentication):
 
             if not str(token).startswith(MANAGER):
                 print("Not manager")
-                return
+                return Response("Not manager")
 
-            user_id = cache.get(token)
+            manager_id = int(cache.get(token))
 
-            user = Manager.objects.get(user_id)
+            manager = Manager.objects.get(pk=manager_id)
 
-            return user, token
+            return manager, token
         except Exception as e:
-            print("管理员认证失败")
-
-
-
+            print(e)
+            print("------管理员认证失败")

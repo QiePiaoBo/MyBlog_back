@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 
 from myBlog.models.blogModel import Blog, BlogType
-from myBlog.models.userModel import User, UserGroup
+from myBlog.models.userModel import User, UserGroup, Manager
 
 
 # 好友表
@@ -41,14 +41,15 @@ class SecretMessage(models.Model):
 
 # 系统通知表
 class SystemNotice(models.Model):
-    # 接受者
-    send_id = models.ForeignKey(User)
+    # 发送者
+    send_user = models.ForeignKey(Manager, related_name="发送者",null=True)
     # 接受组
-    send_group_id = models.ForeignKey(UserGroup)
+    receive_group = models.ForeignKey(UserGroup, related_name="接受组",null=True)
     # 默认发送内容
-    send_default = models.CharField(max_length=256, default='系统通知:')
-    system_topic = models.CharField(max_length=128, null=True)
-    system_content = models.CharField(max_length=256, null=True)
+    system_notice_default = models.CharField(max_length=256, default='系统通知:')
+    system_notice_topic = models.CharField(max_length=128, null=True)
+    system_notice_content = models.CharField(max_length=256, null=True)
+    system_notice_activate = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'myBlog'

@@ -37,8 +37,8 @@ class SecretMessageSerializer(serializers.ModelSerializer):
 class SystemNoticeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SystemNotice
-        fields = ("id", "send_id", "send_group_id", "send_default",
-                  "system_topic", "system_content")
+        fields = ("id", "send_user", "receive_group", "system_notice_default",
+                  "system_notice_topic", "system_notice_content", "system_notice_activate")
 
 
 # 留言表序列化

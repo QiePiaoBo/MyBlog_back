@@ -67,7 +67,7 @@ class ManagerUserAPIView(CreateAPIView):
 
         token = generate_manager_token()
         cache.set("token", token, timeout=MANAGER_TIMEOUT)
-        cache.set(token, user, timeout=MANAGER_TIMEOUT)
+        cache.set(token, user.id, timeout=MANAGER_TIMEOUT)
 
         resp_user = {
             "id": user.id,
@@ -379,7 +379,7 @@ class UserMoodAPIView(APIView):
             else:
                 data = {
                     "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
-                    "msg": "您不能修改被人的心情",
+                    "msg": "您不能修改别人的心情",
                     "data": request.data
                 }
 
