@@ -241,9 +241,33 @@ class UserAttentionAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
 
-        user_id = request.data.get("user_id")
+        user_token = request.query_params.get("token")
 
-        serializer = AttentionSerializer(data=request.data)
+        user_id = cache.get(user_token)
+
+        attention_name = request.data.get("attention_name")
+        attention_id = request.data.get("attention_id")
+
+        if attention_id:
+            req_data = {
+                "user_id":user_id,
+                "attention_id": attention_id
+            }
+        elif attention_name:
+            attention_user = User.objects.get(user_name=attention_name)
+            req_data = {
+                "user_id": user_id,
+                "attention_id": attention_user.id
+            }
+        else:
+            res_data = {
+                "status":444,
+                "msg":"参数错误"
+            }
+            return Response(res_data)
+
+
+        serializer = AttentionSerializer(data=req_data)
 
         serializer.is_valid(raise_exception=True)
 
