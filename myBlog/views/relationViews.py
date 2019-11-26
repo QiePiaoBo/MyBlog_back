@@ -1,4 +1,5 @@
 from django.core.cache import cache
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -8,6 +9,7 @@ from myBlog.permissions.user_permission import UserLogin
 from myBlog.serializers.relationSerializer import MarkSerializer
 
 
+# 收藏增删改查
 class MarkAPIView(APIView):
     authentication_classes = [UserAuthentication, ]
     permission_classes = [UserLogin, ]
@@ -60,6 +62,16 @@ class MarkAPIView(APIView):
         print(mark)
         if mark:
             mark.delete()
-            return Response("Ok")
+            resp_data = {
+                "status": status.HTTP_200_OK,
+                "msg": "Deleted",
+                "data": MarkSerializer(mark).data
+            }
+            return Response(resp_data)
         else:
-            return Response("Not Ok")
+            resp_data = {
+                "status": status.HTTP_400_BAD_REQUEST,
+                "msg": "Not Deleted",
+                "data": request.data
+            }
+            return Response(resp_data)

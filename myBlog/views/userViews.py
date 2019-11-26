@@ -121,7 +121,7 @@ class UserAPIView(CreateAPIView):
         user_id = user.id
 
         theme = {
-            "user_id":user_id,
+            "user_id": user_id,
             "recent_theme": 1,
             "fav_theme": 2
         }
@@ -247,10 +247,11 @@ class UserAttentionAPIView(APIView):
 
         attention_name = request.data.get("attention_name")
         attention_id = request.data.get("attention_id")
-
+        # 如果有attention_id就使用attention_id来拼凑req_data
+        # 如果有attention_name就使用attention_name来获取attention_id去拼凑req_data
         if attention_id:
             req_data = {
-                "user_id":user_id,
+                "user_id": user_id,
                 "attention_id": attention_id
             }
         elif attention_name:
@@ -261,11 +262,10 @@ class UserAttentionAPIView(APIView):
             }
         else:
             res_data = {
-                "status":444,
-                "msg":"参数错误"
+                "status": status.HTTP_400_BAD_REQUEST,
+                "msg": "参数错误"
             }
             return Response(res_data)
-
 
         serializer = AttentionSerializer(data=req_data)
 
@@ -675,5 +675,3 @@ class InfoUserAPIView(APIView):
             "user_says": res_user.get("user_says"),
         }
         return Response(result_data)
-
-
