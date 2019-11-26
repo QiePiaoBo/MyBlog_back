@@ -27,8 +27,39 @@ class MarkAPIView(APIView):
         return Response(data)
 
     def post(self, request):
-        pass
+        user_id = cache.get(request.query_params.get('token'))
+        fav_blog = request.data.get("fav_blog")
+        req_data = {
+            "user_id": user_id,
+            "fav_blog": fav_blog
+        }
+        Marks = Mark.objects.filter(user_id=user_id).filter(fav_blog=fav_blog)
+        if len(Marks) > 0:
+            return Response("数据重复")
+        serializer = MarkSerializer(data=req_data)
+        serializer.is_valid(raise_exception=True)
+        if serializer.save():
+            resp_data = {
+                "status": 200,
+                "msg": "Added",
+                "data": serializer.data
+            }
+            return Response(resp_data)
+        else:
+            resp_data = {
+                "status": 403,
+                "msg": "Failed"
+            }
+            return Response(resp_data)
 
-    def delete(self,request):
-        pass
-
+    def delete(self, request):
+        user_token = request.query_params.get("token")
+        user_id = cache.get(user_token)
+        fav_blog = request.data.get("fav_blog")
+        mark = Mark.objects.filter(user_id=user_id).filter(fav_blog=fav_blog).first()
+        print(mark)
+        if mark:
+            mark.delete()
+            return Response("Ok")
+        else:
+            return Response("Not Ok")
