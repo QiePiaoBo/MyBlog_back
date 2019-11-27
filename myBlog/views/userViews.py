@@ -217,11 +217,7 @@ class UserAttentionAPIView(APIView):
 
     def get(self, request):
         user_id = request.query_params.get('user_id')
-        print(user_id)
-
         attentions = Attention.objects.filter(user_id=user_id)
-        # print(attentions.count())
-        #
         users = []
         for attention in attentions:
             user_id = attention.attention_id.id
@@ -256,53 +252,89 @@ class UserAttentionAPIView(APIView):
             }
         elif attention_name:
             attention_user = User.objects.get(user_name=attention_name)
-            req_data = {
-                "user_id": user_id,
-                "attention_id": attention_user.id
-            }
+            if attention_user:
+                req_data = {
+                    "user_id": user_id,
+                    "attention_id": attention_user.id
+                }
+            else:
+                req_data = None
         else:
             res_data = {
                 "status": status.HTTP_400_BAD_REQUEST,
                 "msg": "参数错误"
             }
             return Response(res_data)
+        if req_data:
+            attentions = Attention.objects.filter(user_id=user_id).filter(attention_id=req_data.get("attention_id"))
+            print()
+            print(attentions.count())
+            # 如果存在相同数据,就返回错误
+            if len(attentions)>0:
+                res_data = {
+                    "status":status.HTTP_400_BAD_REQUEST,
+                    "msg":"已经关注过啦"
+                }
+                return Response(res_data)
+            serializer = AttentionSerializer(data=req_data)
 
-        serializer = AttentionSerializer(data=req_data)
+            serializer.is_valid(raise_exception=True)
 
-        serializer.is_valid(raise_exception=True)
+            group = get_grade(user_id)
 
-        group = get_grade(user_id)
+            # 为了测试方便 部署时应该去掉等于号
+            # 只有当用户的组是2以及更高时,才能关注
+            if group.id >= 1:
+                serializer.save()
+                data = {
+                    "status": status.HTTP_201_CREATED,
+                    "msg": "关注成功",
+                    "data": serializer.data
+                }
+            else:
+                data = {
+                    "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
+                    "msg": "请您完善信息后再关注噢.",
+                    "data": serializer.data
+                }
 
-        # 为了测试方便 部署时应该去掉等于号
-        # 只有当用户的组是2以及更高时,才能关注
-        if group.id >= 1:
-            serializer.save()
-            data = {
-                "status": status.HTTP_201_CREATED,
-                "msg": "关注成功",
-                "data": serializer.data
-            }
-        else:
-            data = {
-                "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION,
-                "msg": "请您完善信息后再关注噢.",
-                "data": serializer.data
-            }
-
-        return Response(data)
+            return Response(data)
 
     def delete(self, request, *args, **kwargs):
-        serializer = AttentionSerializer(data=request.data)
 
-        serializer.is_valid(raise_exception=True)
-        serializer.delete(serializer)
-        data = {
-            "status": status.HTTP_200_OK,
-            "msg": "取关成功",
-            "data": serializer.delete(serializer)
-        }
-        return Response(data)
-
+        token = request.query_params.get("token")
+        user_id = cache.get(token)
+        if request.data.get("attention_id"):
+            attention_id = request.data.get("attention_id")
+        elif request.data.get("attention_name"):
+            attention_name = request.data.get("attention_name")
+            attention_id = User.objects.get(user_name=attention_name).id
+        else:
+            attention_id = 0
+        user_id = cache.get(token)
+        attention = Attention.objects.filter(user_id=user_id).filter(attention_id = attention_id).first()
+        if attention:
+            serializer = AttentionSerializer(attention)
+            if attention.delete():
+                data = {
+                    "status": status.HTTP_200_OK,
+                    "msg": "取关成功",
+                    "data": serializer.data
+                }
+                return Response(data)
+            else:
+                data = {
+                    "status":status.HTTP_400_BAD_REQUEST,
+                    "msg":"删除失败",
+                    "data":request.data
+                }
+                return Response(data)
+        else:
+            data = {
+                "status":status.HTTP_400_BAD_REQUEST,
+                "msg":"您还没有关注过他噢"
+            }
+            return Response(data)
 
 # 用户心情
 class UserMoodAPIView(APIView):
