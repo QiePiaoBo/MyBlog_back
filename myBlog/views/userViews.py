@@ -267,13 +267,12 @@ class UserAttentionAPIView(APIView):
             return Response(res_data)
         if req_data:
             attentions = Attention.objects.filter(user_id=user_id).filter(attention_id=req_data.get("attention_id"))
-            print()
             print(attentions.count())
             # 如果存在相同数据,就返回错误
-            if len(attentions)>0:
+            if len(attentions) > 0:
                 res_data = {
-                    "status":status.HTTP_400_BAD_REQUEST,
-                    "msg":"已经关注过啦"
+                    "status": status.HTTP_400_BAD_REQUEST,
+                    "msg": "已经关注过啦"
                 }
                 return Response(res_data)
             serializer = AttentionSerializer(data=req_data)
@@ -312,7 +311,7 @@ class UserAttentionAPIView(APIView):
         else:
             attention_id = 0
         user_id = cache.get(token)
-        attention = Attention.objects.filter(user_id=user_id).filter(attention_id = attention_id).first()
+        attention = Attention.objects.filter(user_id=user_id).filter(attention_id=attention_id).first()
         if attention:
             serializer = AttentionSerializer(attention)
             if attention.delete():
@@ -324,17 +323,45 @@ class UserAttentionAPIView(APIView):
                 return Response(data)
             else:
                 data = {
-                    "status":status.HTTP_400_BAD_REQUEST,
-                    "msg":"删除失败",
-                    "data":request.data
+                    "status": status.HTTP_400_BAD_REQUEST,
+                    "msg": "删除失败",
+                    "data": request.data
                 }
                 return Response(data)
         else:
             data = {
-                "status":status.HTTP_400_BAD_REQUEST,
-                "msg":"您还没有关注过他噢"
+                "status": status.HTTP_400_BAD_REQUEST,
+                "msg": "您还没有关注过他噢"
             }
             return Response(data)
+
+
+# 是否关注过
+class AttentionedOrNot(APIView):
+    authentication_classes = [UserAuthentication, ]
+    permission_classes = [UserLogin, ]
+
+    def get(self, request):
+        user_id = cache.get(request.query_params.get("token"))
+        attention_id = request.query_params.get("attention_id")
+        attention_name = request.query_params.get("attention_name")
+
+        if attention_id:
+            attentions = Attention.objects.filter(user_id=user_id).filter(attention_id=attention_id)
+            if len(attentions) > 0:
+                return Response(True)
+            else:
+                return Response(False)
+        elif attention_name:
+            attention_id = User.objects.get(user_name=attention_name).id
+            attentions = Attention.objects.filter(user_id=user_id).filter(attention_id=attention_id)
+            if len(attentions) > 0:
+                return Response(True)
+            else:
+                return Response(False)
+        else:
+            return Response("请求参数错误")
+
 
 # 用户心情
 class UserMoodAPIView(APIView):

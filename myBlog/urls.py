@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^user/', userViews.UserAPIView().as_view()),
     url(r'^user_info/', userViews.InfoUserAPIView().as_view()),
     url(r'^attention/', userViews.UserAttentionAPIView().as_view()),
+    url(r'^attentioned_or_not/', userViews.AttentionedOrNot().as_view()),
     url(r'^mood/', userViews.UserMoodAPIView().as_view()),
     url(r'^theme/', userViews.UserThemeAPIView().as_view()),
     url(r'^secret/', userViews.UserSecretMessageAPIView().as_view()),
