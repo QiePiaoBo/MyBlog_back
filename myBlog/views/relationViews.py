@@ -37,7 +37,12 @@ class MarkAPIView(APIView):
         }
         Marks = Mark.objects.filter(user_id=user_id).filter(fav_blog=fav_blog)
         if len(Marks) > 0:
-            return Response("数据重复")
+            resp_data = {
+                "status":status.HTTP_400_BAD_REQUEST,
+                "msg":"数据重复",
+                "data":request.data
+            }
+            return Response(resp_data)
         serializer = MarkSerializer(data=req_data)
         serializer.is_valid(raise_exception=True)
         if serializer.save():
