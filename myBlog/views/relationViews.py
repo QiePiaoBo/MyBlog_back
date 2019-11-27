@@ -59,7 +59,6 @@ class MarkAPIView(APIView):
         user_id = cache.get(user_token)
         fav_blog = request.data.get("fav_blog")
         mark = Mark.objects.filter(user_id=user_id).filter(fav_blog=fav_blog).first()
-        print(mark)
         if mark:
             mark.delete()
             resp_data = {
