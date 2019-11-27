@@ -38,9 +38,9 @@ class MarkAPIView(APIView):
         Marks = Mark.objects.filter(user_id=user_id).filter(fav_blog=fav_blog)
         if len(Marks) > 0:
             resp_data = {
-                "status":status.HTTP_400_BAD_REQUEST,
-                "msg":"数据重复",
-                "data":request.data
+                "status": status.HTTP_400_BAD_REQUEST,
+                "msg": "数据重复",
+                "data": request.data
             }
             return Response(resp_data)
         serializer = MarkSerializer(data=req_data)
@@ -79,3 +79,18 @@ class MarkAPIView(APIView):
                 "data": request.data
             }
             return Response(resp_data)
+
+
+# 判断是否收藏过
+class MarkedOrNotAPIView(APIView):
+    authentication_classes = [UserAuthentication, ]
+    permission_classes = [UserLogin, ]
+
+    def get(self, request):
+        user_id = cache.get(request.query_params.get("token"))
+        fav_blog = request.query_params.get("blog_id")
+        mark = Mark.objects.filter(user_id=user_id).filter(fav_blog=fav_blog).first()
+        if mark:
+            return Response(True)
+        else:
+            return Response(False)

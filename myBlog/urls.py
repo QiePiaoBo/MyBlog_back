@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^user_blog/',blogViews.UserBlogsAPIView().as_view()),
     url(r'^blog_type/',blogViews.BlogTypesAPIView().as_view()),
     url(r'^marks/',relationViews.MarkAPIView.as_view()),
+    url(r'^marked_or_not/',relationViews.MarkedOrNotAPIView.as_view()),
 
     # 管理员功能
     url(r'^manage_blog_type/', manageViews.ManageBlogTypeAPIView.as_view()),
