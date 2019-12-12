@@ -33,5 +33,5 @@ class ArticleSerializer(serializers.ModelSerializer):
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
-        fields = ("id", "blog_keyword","blog_secret", "blog_description", "blog_author"
+        fields = ("id", "blog_keyword","blog_secret", "blog_description", "blog_author","blog_top"
                   , "blog_type", "blog_content", "blog_agree", "blog_disagree")
