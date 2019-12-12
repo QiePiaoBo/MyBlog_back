@@ -20,6 +20,13 @@ class ManageBlogTypeAPIView(APIView):
 
     def get(self, request):
         blog_types = BlogType.objects.all()
+        if request.query_params.get("status"):
+            status = request.query_params.get("status")
+            if status == "None":
+                blog_types = blog_types
+            else:
+                blog_types = blog_types.filter(is_del=status)
+
         blog_type_serializers = BlogTypeSerializer(blog_types, many=True)
 
         return Response(blog_type_serializers.data)
