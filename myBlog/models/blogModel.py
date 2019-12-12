@@ -17,6 +17,7 @@ from myBlog.models.userModel import User, UserGroup
 class BlogType(models.Model):
     icon = models.CharField(max_length=64, null=True)
     type_name = models.CharField(max_length=64, null=True)
+    is_del = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'myBlog'

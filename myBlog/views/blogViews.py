@@ -421,7 +421,7 @@ class UserBlogsAPIView(APIView):
 class BlogTypesAPIView(APIView):
 
     def get(self, request):
-        types = BlogType.objects.all()
+        types = BlogType.objects.all().filter(is_del=False)
         type_serializer = BlogTypeSerializer(types, many=True)
         return Response(type_serializer.data)
 

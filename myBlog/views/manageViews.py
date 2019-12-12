@@ -9,11 +9,11 @@ from myBlog.models import BlogType, Blog, User, SystemNotice, Manager
 from myBlog.permissions.manager_permission import ManagerLogin
 from myBlog.serializers.blogSerializer import BlogTypeSerializer, BlogSerializer
 
-# blog_type
 from myBlog.serializers.relationSerializer import SystemNoticeSerializer
 from myBlog.serializers.userSerializer import UserSerializer
 
 
+# blog_type
 class ManageBlogTypeAPIView(APIView):
     authentication_classes = [ManagerAuthentication, ]
     permission_classes = [ManagerLogin, ]

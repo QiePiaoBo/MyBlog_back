@@ -16,7 +16,7 @@ from myBlog.models.blogModel import *
 class BlogTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogType
-        fields = ("id", "icon", "type_name")
+        fields = ("id", "icon", "type_name","is_del")
 
 
 # 文章序列化
