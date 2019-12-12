@@ -82,7 +82,7 @@ class ManageBlogAPIView(APIView):
     def get(self, request):
         page_number = request.query_params.get("page_number")
         page_size = request.query_params.get("page_size")
-        blogs = Blog.objects.all()
+        blogs = Blog.objects.all().order_by("-id")
         blog_list = Paginator(blogs, per_page=page_size)
         page_blogs = blog_list.page(page_number)
 
