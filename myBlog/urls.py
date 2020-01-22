@@ -31,4 +31,7 @@ urlpatterns = [
     url(r'^manage_user/', manageViews.ManageUserAPIView.as_view()),
     url(r'^manage_notice/', manageViews.ManageSystemNoticeAPIView.as_view()),
 
+    # 上传图片
+    url(r'^upload_image', blogViews.upload)
+
 ]

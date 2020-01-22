@@ -1,11 +1,15 @@
 import math
+import os
 
 from django.core.cache import cache
 from django.core.paginator import Paginator
+from django.http import HttpResponse
+from pymysql import Date
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from BLOG.settings import IMAGE_DIR
 from myBlog.authentications.user_authentication import UserAuthentication
 from myBlog.models import Blog, User, Commit, Article, BlogType
 from myBlog.permissions.user_permission import UserLogin
@@ -426,6 +430,20 @@ class BlogTypesAPIView(APIView):
         return Response(type_serializer.data)
 
 
+# 图片上传
+def upload(request):
 
+    # 获取文件对象
+    f1 = request.FILES.get('image')
+
+    # 图片写入服务器
+    fname0 = IMAGE_DIR + '/' + str(Date.today())
+    if not fname0:
+        os.mkdir(fname0)
+    fname = fname0 + '/' + f1.name
+    with open(fname, 'wb') as pic:
+        for c in f1.chunks():
+            pic.write(c)
+    return HttpResponse(fname[11:])
 
 
